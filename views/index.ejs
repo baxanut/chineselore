@@ -1,1 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Camera Tracker Dashboard</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>📹 Smart Camera Tracker</h1>
+        <p class="subtitle">Welcome back, <strong><%= username %></strong></p>
+      </div>
+      <div class="header-right">
+        <div class="header-stats">
+          <span class="stat">🎥 Videos: <%= videos.length %></span>
+          <span class="stat">📊 Total Detections: <%= videos.reduce((sum, v) => sum + v.detections.length, 0) %></span>
+        </div>
+        <a href="/logout" class="btn btn-secondary btn-small logout-btn">🚪 Sign Out</a>
+      </div>
+    </header>
 
+    <div class="search-container">
+      <form action="/search" method="GET" class="search-form">
+        <input type="text" name="item" placeholder="Search for an item (e.g., wallet, keys, phone)..." required>
+        <button type="submit" class="btn btn-primary">🔍 Search</button>
+      </form>
+      <button onclick="showAllItems()" class="btn btn-secondary">📋 View All Items</button>
+    </div>
+
+    <% if (message) { %>
+      <div class="alert alert-success">
+        <%= message %>
+        <button onclick="this.parentElement.remove()" class="close-btn">×</button>
+      </div>
+    <% } %>
+
+    <% if (error) { %>
+      <div class="alert alert-error">
+        <%= error %>
+        <button onclick="this.parentElement.remove()" class="close-btn">×</button>
+      </div>
+    <% } %>
+
+    <h2 class="section-title">Recent Camera Footage</h2>
+
+    <div class="videos-grid">
+      <% if (videos.length === 0) { %>
+        <div class="empty-state">
+          <p>No camera footage found. Waiting for Raspberry Pi to send data...</p>
+          <small>Make sure your Raspberry Pi is connected and sending detections to the API.</small>
+        </div>
+      <% } else { %>
+        <% videos.forEach(video => { %>
+          <div class="video-card">
+            <div class="card-header">
+              <h3>📹 <%= video.videoId %></h3>
+              <span class="camera-badge">📷 <%= video.cameraId %></span>
+            </div>
+            <div class="detections-summary">
+              <p><strong><%= video.detections.length %></strong> items detected</p>
+              <div class="items-list">
+                <% const uniqueItems = [...new Set(video.detections.map(d => d.item))]; %>
+                <% uniqueItems.slice(0, 5).forEach(item => { %>
+                  <span class="item-tag"><%= item %></span>
+                <% }); %>
+                <% if (uniqueItems.length > 5) { %>
+                  <span class="item-tag">+<%= uniqueItems.length - 5 %> more</span>
+                <% } %>
+              </div>
+            </div>
+            <div class="recent-detections">
+              <h4>Recent Detections:</h4>
+              <ul>
+                <% video.detections.slice(0, 3).forEach(det => { %>
+                  <li>
+                    <strong><%= det.item %></strong> at
+                    <%= new Date(det.timestamp).toLocaleString() %>
+                    <span class="confidence">(<%= (det.confidence * 100).toFixed(0) %>% confidence)</span>
+                  </li>
+                <% }); %>
+              </ul>
+            </div>
+            <div class="card-actions">
+              <a href="/video/<%= video.videoId %>" class="btn btn-primary">View Video & Timeline</a>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+  </div>
+
+  <div id="itemsModal" class="modal">
+    <div class="modal-content">
+      <h2>All Detected Items</h2>
+      <div id="itemsList" class="items-grid"><p>Loading...</p></div>
+      <div class="modal-actions">
+        <button onclick="closeItemsModal()" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function showAllItems() {
+      document.getElementById('itemsModal').style.display = 'flex';
+      try {
+        const response = await fetch('/api/items');
+        const data = await response.json();
+        const itemsList = document.getElementById('itemsList');
+        if (data.items.length === 0) {
+          itemsList.innerHTML = '<p>No items detected yet.</p>';
+        } else {
+          itemsList.innerHTML = data.items.map(item => `
+            <a href="/search?item=${encodeURIComponent(item)}" class="item-card">
+              <span class="item-name">${item}</span>
+              <span class="item-action">View all →</span>
+            </a>
+          `).join('');
+        }
+      } catch (error) {
+        document.getElementById('itemsList').innerHTML = '<p>Failed to load items.</p>';
+      }
+    }
+
+    function closeItemsModal() {
+      document.getElementById('itemsModal').style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+      if (event.target === document.getElementById('itemsModal')) closeItemsModal();
+    }
+  </script>
+</body>
+</html>
