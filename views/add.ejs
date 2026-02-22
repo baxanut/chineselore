@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Results - Smart Camera Tracker</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔍 Search Results</h1>
+      <div class="header-right">
+        <a href="/" class="btn btn-secondary">← Back to Dashboard</a>
+        <a href="/logout" class="btn btn-secondary btn-small logout-btn">🚪 Sign Out</a>
+      </div>
+    </header>
 
+    <div class="search-result-header">
+      <h2>Searching for: "<%= searchTerm %>"</h2>
+      <p><%= detections.length %> detection(s) found</p>
+    </div>
+
+    <% if (detections.length === 0) { %>
+      <div class="empty-state">
+        <h3>No results found for "<%= searchTerm %>"</h3>
+        <p>This item has never been detected by your cameras.</p>
+        <a href="/" class="btn btn-primary">Back to Dashboard</a>
+      </div>
+    <% } else { %>
+      <div class="last-seen-card">
+        <h3>🎯 Last Seen</h3>
+        <div class="last-seen-info">
+          <p><strong>Item:</strong> <%= detections[0].item %></p>
+          <p><strong>Time:</strong> <%= new Date(detections[0].timestamp).toLocaleString() %></p>
+          <p><strong>Camera:</strong> <%= detections[0].camera_id %></p>
+          <p><strong>Video:</strong> <%= detections[0].video_id %></p>
+          <p><strong>Timestamp in video:</strong> <%= Math.floor(detections[0].timestamp_sec / 60) %>m <%= detections[0].timestamp_sec % 60 %>s</p>
+        </div>
+        <a href="/video/<%= detections[0].video_id %>?seek=<%= detections[0].timestamp_sec %>" class="btn btn-primary">
+          📹 Jump to Video
+        </a>
+      </div>
+
+      <h3 class="section-title">All Detections Timeline</h3>
+      <div class="timeline">
+        <% detections.forEach(det => { %>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <span class="timeline-time"><%= new Date(det.timestamp).toLocaleString() %></span>
+                <span class="confidence-badge"><%= (det.confidence * 100).toFixed(0) %>% confidence</span>
+              </div>
+              <p><strong>Camera:</strong> <%= det.camera_id %></p>
+              <p><strong>Video:</strong> <%= det.video_id %></p>
+              <p><strong>Timestamp:</strong> <%= Math.floor(det.timestamp_sec / 60) %>m <%= det.timestamp_sec % 60 %>s</p>
+              <div class="timeline-actions">
+                <a href="/video/<%= det.video_id %>?seek=<%= det.timestamp_sec %>" class="btn btn-small btn-primary">
+                  View in Video
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</body>
+</html>
