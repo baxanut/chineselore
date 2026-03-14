@@ -11,6 +11,12 @@ const PORT = process.env.PORT || 3000;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY; // service_role key for backend
 
+// DEBUG - remove after fixing
+console.log('ENV CHECK:');
+console.log('SUPABASE_URL:', SUPABASE_URL ? `SET (${SUPABASE_URL.slice(0, 20)}...)` : 'NOT SET');
+console.log('SUPABASE_SERVICE_KEY:', SUPABASE_SERVICE_KEY ? `SET (${SUPABASE_SERVICE_KEY.slice(0, 10)}...)` : 'NOT SET');
+console.log('All env keys:', Object.keys(process.env).join(', '));
+
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
   console.error('❌ SUPABASE_URL and SUPABASE_SERVICE_KEY environment variables are required!');
   process.exit(1);
