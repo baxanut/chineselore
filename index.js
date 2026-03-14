@@ -313,8 +313,8 @@ app.post('/api/detection', async (req, res) => {
     if (error) throw error;
     res.json({ success: true, message: 'Detection logged' });
   } catch (err) {
-    console.error('Error logging detection:', err);
-    res.status(500).json({ error: 'Failed to log detection' });
+    console.error('Error logging detection:', JSON.stringify(err));
+    res.status(500).json({ error: 'Failed to log detection', details: err.message || JSON.stringify(err) });
   }
 });
 
