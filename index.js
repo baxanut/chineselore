@@ -31,6 +31,8 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+app.set('trust proxy', 1); // Trust Render's proxy
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'memoryretrieve-secret-change-me',
   resave: false,
@@ -38,6 +40,7 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
+    sameSite: 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
