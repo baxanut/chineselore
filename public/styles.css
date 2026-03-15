@@ -69,6 +69,7 @@ header h1 {
 .header-stats {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .stat {
@@ -91,6 +92,7 @@ header h1 {
   border: none;
   cursor: pointer;
   font-size: 1rem;
+  white-space: nowrap;
 }
 
 .btn-primary {
@@ -141,11 +143,12 @@ header h1 {
   flex: 1;
   display: flex;
   gap: 10px;
-  min-width: 300px;
+  min-width: 0; /* FIX: was 300px, caused overflow on mobile */
 }
 
 .search-form input {
   flex: 1;
+  min-width: 0; /* FIX: prevents input from overflowing its flex container */
   padding: 12px 20px;
   border: 2px solid #2d3561;
   border-radius: 8px;
@@ -238,11 +241,15 @@ header h1 {
   margin-bottom: 15px;
   padding-bottom: 15px;
   border-bottom: 2px solid #2d3561;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .card-header h3 {
   color: #c77dff;
   font-size: 1.2rem;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .camera-badge {
@@ -253,6 +260,7 @@ header h1 {
   font-size: 0.85rem;
   font-weight: 500;
   border: 1px solid #3c096c;
+  flex-shrink: 0;
 }
 
 .detections-summary {
@@ -316,6 +324,7 @@ header h1 {
 
 .card-actions .btn {
   width: 100%;
+  text-align: center;
 }
 
 /* Empty State */
@@ -445,6 +454,8 @@ header h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .timeline-time {
@@ -602,6 +613,7 @@ header h1 {
 
 .detection-info {
   flex: 1;
+  min-width: 0;
 }
 
 .detection-header {
@@ -609,12 +621,15 @@ header h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .item-name {
   font-weight: 500;
   color: #333;
   font-size: 1.1rem;
+  word-break: break-word;
 }
 
 .detection-time {
@@ -647,6 +662,7 @@ header h1 {
   align-items: center;
   z-index: 1000;
   animation: fadeIn 0.3s ease;
+  padding: 16px;
 }
 
 .modal-content {
@@ -654,7 +670,7 @@ header h1 {
   padding: 40px;
   border-radius: 12px;
   max-width: 600px;
-  width: 90%;
+  width: 100%;
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
@@ -671,10 +687,13 @@ header h1 {
   margin-top: 25px;
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
 .modal-actions .btn {
   flex: 1;
+  text-align: center;
+  min-width: 120px;
 }
 
 .items-grid {
@@ -709,6 +728,8 @@ header h1 {
 .item-action {
   color: #c77dff;
   font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 /* Animations */
@@ -739,7 +760,8 @@ header h1 {
   }
 }
 
-/* Responsive Design */
+/* ===================== RESPONSIVE ===================== */
+
 @media (max-width: 1024px) {
   .video-viewer-container {
     grid-template-columns: 1fr;
@@ -754,23 +776,57 @@ header h1 {
   header {
     flex-direction: column;
     align-items: flex-start;
+    padding: 20px;
   }
 
   header h1 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .header-stats {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
+  .stat {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  /* Search: stack form and View All button vertically */
   .search-container {
     flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 10px;
   }
 
   .search-form {
     width: 100%;
+    min-width: 0;
+  }
+
+  .search-form input {
+    min-width: 0;
+    font-size: 0.95rem;
+  }
+
+  /* Make search button & View All button full-width on mobile */
+  .search-form .btn,
+  .search-container > .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Stack search input and button vertically on very small screens */
+  .search-form {
+    flex-direction: column;
   }
 
   .videos-grid {
@@ -780,6 +836,15 @@ header h1 {
   .timeline {
     padding-left: 20px;
   }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .modal-content {
+    padding: 20px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -788,10 +853,35 @@ header h1 {
   }
 
   header {
-    padding: 20px;
+    padding: 16px;
+  }
+
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    padding: 10px 18px;
   }
 
   .modal-content {
-    padding: 25px;
+    padding: 16px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+
+  .last-seen-card {
+    padding: 20px;
+  }
+
+  .last-seen-card h3 {
+    font-size: 1.2rem;
   }
 }
